@@ -1,4 +1,5 @@
 {
+    "output": "build",
     "board": "arduino:megaavr:uno2018",
     "configuration": "mode=on",
     "port": "/dev/cu.usbmodem14202",
