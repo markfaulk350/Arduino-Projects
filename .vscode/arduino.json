@@ -2,5 +2,5 @@
     "board": "arduino:megaavr:uno2018",
     "configuration": "mode=on",
     "port": "/dev/cu.usbmodem14202",
-    "sketch": "connect_to_wpa2_wifi/connect_to_wpa2_wifi.ino"
+    "sketch": "wifi_web_client_repeating/wifi_web_client_repeating.ino"
 }
