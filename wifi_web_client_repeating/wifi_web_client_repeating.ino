@@ -26,7 +26,8 @@ char server[] = "github-contribution-api.herokuapp.com";
 //IPAddress server(64,131,82,241);
 
 unsigned long lastConnectionTime = 0;            // last time you connected to the server, in milliseconds
-const unsigned long postingInterval = 10L * 1000L; // delay between updates, in milliseconds
+const unsigned long postingInterval = 20L * 1000L; // delay between updates, in milliseconds
+// const unsigned long postingInterval = 10L * 1000L; // delay between updates, in milliseconds
 
 void setup() {
   //Initialize serial and wait for port to open:
@@ -66,11 +67,19 @@ void setup() {
 }
 
 void loop() {
+
+  // THE IDEA IS TO MAKE AN API CALL FOR NEW GITHUB DATA EVERY 5 MIN.
+  // WE WANT TO GET THE STRING FROM THE API PARSE IT AND SAVE THE DATA TO A LIST
+  // WE THEN WANT TO ITERATE THROUGH THE LIST AND LIGHT UP LEDS WITH COLORS
+  // THAT WILL VARY DEPENDING UPON THE NUMBER OF GIT COMMITS PER DAY
+  // DO I NEED TO PUT A NEWLINE CHAR AT END TO STOP STRING PARSING?
+
   // if there's incoming data from the net connection.
   // send it out the serial port.  This is for debugging
   // purposes only:
+
   while (client.available()) {
-    char c = client.read();
+    char c = client.read(); 
     Serial.write(c);
   }
 
@@ -92,7 +101,7 @@ void httpRequest() {
     Serial.println("connecting...");
     // client.println("GET / HTTP/1.1");
     // client.println("Host: example.org");
-    client.println("GET / HTTP/1.1");
+    client.println("GET /github-user-stats/markfaulk350?format=string&weeks=1 HTTP/1.1");
     client.println("Host: github-contribution-api.herokuapp.com");
     client.println("User-Agent: ArduinoWiFi/1.1");
     client.println("Connection: close");
@@ -106,7 +115,6 @@ void httpRequest() {
   }
   Serial.print("-/ httpRequest ------------------------------\n");
 }
-
 
 void printWifiStatus() {
   Serial.print("-- printWifiStatus ------------------------------\n");
