@@ -120,9 +120,7 @@ void loop()
 
     char copy[responseBody.length() + 50];
     responseBody.toCharArray(copy, responseBody.length() + 50);
-
-    
-    char *array[15];
+    char *array[responseBody.length() + 50];
     int i = 0;
 
     array[i] = strtok(copy, ",");
@@ -132,8 +130,8 @@ void loop()
       array[i++] = strtok(NULL, ",");
     }
 
-    for (i = 0; i < 15; i++) {
-      Serial.println(array[i]);
+    for (i = 0; i < responseBody.length() + 50; i++) {
+      Serial.println(copy[i]);
     }
 
     // Serial.print(copy);
