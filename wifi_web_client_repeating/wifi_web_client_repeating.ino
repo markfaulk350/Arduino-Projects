@@ -107,31 +107,55 @@ void loop()
     // Serial.print(responseString);
 
     int responseLength = responseString.length();
-    // Serial.print(responseLength);
-
     int start = responseString.indexOf('|start|');
-
-    // Serial.print("Start index:");
-    // Serial.println(start);
-
     String responseBody = responseString.substring(start + 7, responseLength);
+
+    // NEED TO COUNT NUMBER OF COMMAS IN STRING TO KNOW HOW MANY WE CAN PRINT / LEDS TO LIGHT
+    int commaCount = 0; // The amount of data will be (commaCount + 1) !!!!
+
+    for (int i = 0; i < responseBody.length(); i++)
+    {
+      if (responseBody.charAt(i) == ',')
+      {
+        commaCount = commaCount + 1;
+        // Serial.println("Comma has been found!");
+      }
+    }
+
+    // Serial.println('commaCount:');
+    // Serial.println(commaCount);
 
     // Serial.print(responseBody);
 
-    char copy[responseBody.length() + 50];
-    responseBody.toCharArray(copy, responseBody.length() + 50);
-    char *array[responseBody.length() + 50];
+    // We need to know how many slots we need for the data
+    // We can calculate this by counting the number of commas in the response body + 1 because the last number does not have a comma
+
+    char copy[responseBody.length() + 1];
+    responseBody.toCharArray(copy, responseBody.length() + 1);
+
+    char *strings[responseBody.length() + 1];
     int i = 0;
+    char *ptr = NULL;
 
-    array[i] = strtok(copy, ",");
+    ptr = strtok(copy, ",");
 
-    while (array[i] != NULL)
+    while (ptr != NULL)
     {
-      array[i++] = strtok(NULL, ",");
+      strings[i] = ptr;
+      i++;
+      ptr = strtok(NULL, ",");
     }
 
-    for (i = 0; i < responseBody.length() + 50; i++) {
-      Serial.println(copy[i]);
+    // strings[i] = strtok(copy, ",");
+
+    // while (strings[i] != NULL)
+    // {
+    //   strings[i++] = strtok(NULL, ",");
+    // }
+
+    for (i = 0; i < commaCount + 1; i++)
+    {
+      Serial.println(strings[i]);
     }
 
     // Serial.print(copy);
@@ -164,7 +188,7 @@ void httpRequest()
     Serial.println("connecting...");
     // client.println("GET / HTTP/1.1");
     // client.println("Host: example.org");
-    client.println("GET /github-user-stats/markfaulk350?format=string&weeks=2 HTTP/1.1");
+    client.println("GET /github-user-stats/fabpot?format=string&weeks=2 HTTP/1.1");
     client.println("Host: github-contribution-api.herokuapp.com");
     client.println("User-Agent: ArduinoWiFi/1.1");
     client.println("Connection: close");

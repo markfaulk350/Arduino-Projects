@@ -3,7 +3,7 @@
 #define LED_PIN 7   // Arduino Uno digital pin connecting to WS2812 data-in
 #define NUM_LEDS 3  // # of WS2812 leds on strip
 
-int commits[] = {0, 1, 5}
+int commits[] = {0, 1, 5};
 
 // 1st (235, 234, 240)
 // 2nd (155, 226, 167)
@@ -35,7 +35,7 @@ void loop() {
   FastLED.show();
   delay(500);
 
-  led[1] = CRGB((33, 96, 42);
+  led[1] = CRGB(33, 96, 42);
   FastLED.show();
   delay(500);
 
