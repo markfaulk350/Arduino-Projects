@@ -1,6 +1,6 @@
 {
-    "board": "arduino:megaavr:uno2018",
-    "configuration": "mode=on",
+    "sketch": "controll_adafruit_neopixel/controll_adafruit_neopixel.ino",
     "port": "/dev/cu.usbmodem14202",
-    "sketch": "controll_neopixel/controll_neopixel.ino"
+    "board": "arduino:megaavr:uno2018",
+    "configuration": "mode=on"
 }
