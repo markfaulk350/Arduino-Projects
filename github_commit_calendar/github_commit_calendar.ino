@@ -1,7 +1,8 @@
 /*
 
  Board: Arduino Uno WiFi Rev2
- LED Strip: WS2812
+ LED Strip: HKBAYI 4M WS2812B 5050 SMD Built-in WS2811 IC Black Board LED Strip Lights
+ https://www.amazon.com/gp/product/B00JYPJAL2/ref=ppx_yo_dt_b_asin_title_o04_s00?ie=UTF8&psc=1
 
  ---------- Github Commits Calendar ----------
 
