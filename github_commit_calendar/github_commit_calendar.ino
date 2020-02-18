@@ -1,12 +1,41 @@
-// client.read() can only read one char at a time. We need to take the char and store it in either a string or char array.
-// We need to determine when we have read the entire response from the server.
-// Then once we know we have the entire response. Seperate the response headers from response data.
-
 /*
-  Repeating Wifi Web Client
 
- This sketch connects to a web server and makes a request
- using a WiFi equipped Arduino Uno Rev2.
+ Board: Arduino Uno WiFi Rev2
+ LED Strip: WS2812
+
+ ---------- Github Commits Calendar ----------
+
+ Connects to a local wifi network and makes an HTTP request to a node.js API that web scrapes a Github profile page for commit statistics.
+ Parses response body from response headers and loops through commit statistics to light up an individually addressable WS2812 led strip.
+ Each led on the strip will represent a calendar day. If the GitHub user makes a commit on that calendar day, the led will light up.
+ The more a user commits on that day, the brighter the led will become.
+
+ ---------- API ENPOINTS ----------
+ These API endpoints will work for any GitHub user. You just need to specify the GitHub username  /github-user-stats/insert-github-username-here
+
+ Query Params:
+ format= json or string
+ weeks= can be any number of weeks between 1 and 52
+
+ // String Response
+ https://github-contribution-api.herokuapp.com/github-user-stats/markfaulk350?format=string&weeks=52
+
+ // JSON Response
+ https://github-contribution-api.herokuapp.com/github-user-stats/markfaulk350?format=json
+
+ ---------- API ENPOINTS ----------
+
+ The HTTP response body used for this project is in text format:
+ |start|0,5,3,7,3,10,0,0,6,22
+
+ Each int respresents the number of commits per day. The first int next to the "|start|" flag is today. It's ordered from newest to oldest.
+
+ A "," delimiter is used to seperate the days.
+
+ We use a |start| flag to determine where the response body starts.
+ We use the total raw response length to determine where the response body ends.
+
+ Uses the Adafruit_NeoPixel library to controll the WS2812 led strip using a single data pin on the arduino uno
 
  */
 
@@ -15,12 +44,12 @@
 
 #include "secrets.h"
 
-char ssid[] = SECRET_SSID;
-char pass[] = SECRET_PASS;
+char ssid[] = SECRET_SSID; // Wifi Network
+char pass[] = SECRET_PASS; // Wifi Password
+
+String responseString; // Where the raw http response is written to
+
 bool hasStartedReading = false;
-
-String responseString;
-
 int status = WL_IDLE_STATUS;
 
 // Initialize the Wifi client library
