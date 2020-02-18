@@ -1,6 +1,5 @@
 {
-    "board": "arduino:megaavr:uno2018",
-    "configuration": "mode=on",
+    "board": "arduino:avr:unowifi",
     "port": "/dev/cu.usbmodem14202",
     "sketch": "wifi_web_client_repeating/wifi_web_client_repeating.ino"
 }
