@@ -1,45 +1,95 @@
 #include <FastLED.h>
 
-#define LED_PIN 7   // Arduino Uno digital pin connecting to WS2812 data-in
-#define NUM_LEDS 3  // # of WS2812 leds on strip
-
-int commits[] = {0, 1, 5};
-
-// 1st (235, 234, 240)
-// 2nd (155, 226, 167)
-// 3rd (84, 205, 101)
-// 4th (56, 156, 68)
-// 5th (33, 96, 42)
+#define LED_PIN 7
+#define NUM_LEDS 21
 
 CRGB led[NUM_LEDS];
 
+int commits[21] = {0, 1, 0, 0, 3, 1, 22, 5, 7, 2, 5, 0, 0, 50, 12, 8, 1, 0, 4, 34, 0};
+
 void setup() {
-  // FastLED.addLeds<WS2812, LED_PIN, GRB>(led, NUM_LEDS);
   FastLED.addLeds<NEOPIXEL, LED_PIN>(led, NUM_LEDS);
 }
 
 void loop() {
-  led[0] = CRGB(235, 234, 240);
-  FastLED.show();
-  delay(500);
+  for (int i = 0; i < NUM_LEDS; i++) {
 
-  led[1] = CRGB(155, 226, 167);
-  FastLED.show();
-  delay(500);
+    if (commits[i] == 0) {
+      led[i] = CRGB(0, 0, 0);
+      FastLED.show();
+    } else if (commits[i] >= 1 && commits[i] < 5) {
+      led[i] = CRGB(0, 20, 0);
+      FastLED.show();
+    } else if (commits[i] >= 5 && commits[i] < 10) {
+      led[i] = CRGB(0, 80, 0);
+      FastLED.show();
+    } else if (commits[i] >= 10 && commits[i] < 20) {
+      led[i] = CRGB(0, 255, 0);
+      FastLED.show();
+    } else if (commits[i] >= 20 && commits[i] < 100) {
+      led[i] = CRGB(255, 255, 0);
+      FastLED.show();
+    } else {
+      led[i] = CRGB(0, 0, 100);
+      FastLED.show();
+    }
+  }
 
-  led[2] = CRGB(84, 205, 101);
-  FastLED.show();
-  delay(500);
+  //// Red
+  //for(int i = 0; i < NUM_LEDS; i++){
+  //  led[i] = CRGB(255, 0, 0);
+  //  FastLED.show();
+  //  delay(50);
+  //}
+  //
+  //// Orange
+  //for(int i = 0; i < NUM_LEDS; i++){
+  //  led[i] = CRGB(255, 128, 0);
+  //  FastLED.show();
+  //  delay(50);
+  //}
+  //
+  //
+  //// Yellow
+  //for(int i = 0; i < NUM_LEDS; i++){
+  //  led[i] = CRGB(255, 255, 0);
+  //  FastLED.show();
+  //  delay(50);
+  //}
+  //
+  //// Green
+  //for(int i = 0; i < NUM_LEDS; i++){
+  //  led[i] = CRGB(0, 255, 0);
+  //  FastLED.show();
+  //  delay(50);
+  //}
+  //
+  //// Blue
+  //for(int i = 0; i < NUM_LEDS; i++){
+  //  led[i] = CRGB(0, 0, 255);
+  //  FastLED.show();
+  //  delay(50);
+  //}
+  //
+  //// Violet
+  //for(int i = 0; i < NUM_LEDS; i++){
+  //  led[i] = CRGB(153, 0, 153);
+  //  FastLED.show();
+  //  delay(50);
+  //}
+  //
+  //// Pink
+  //for(int i = 0; i < NUM_LEDS; i++){
+  //  led[i] = CRGB(255, 51, 255);
+  //  FastLED.show();
+  //  delay(50);
+  //}
+  //
+  //// White
+  //for(int i = 0; i < NUM_LEDS; i++){
+  //  led[i] = CRGB(255,255, 255);
+  //  FastLED.show();
+  //  delay(5);
+  //}
 
-  led[0] = CRGB(56, 156, 68);
-  FastLED.show();
-  delay(500);
-
-  led[1] = CRGB(33, 96, 42);
-  FastLED.show();
-  delay(500);
-
-  led[2] = CRGB(235, 234, 240);
-  FastLED.show();
-  delay(500);
 }
