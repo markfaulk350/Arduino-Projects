@@ -18,10 +18,10 @@
  format= json or string
  weeks= can be any number of weeks between 1 and 52
 
- // String Response
+ // String Response - For this arduino project
  https://github-contribution-api.herokuapp.com/github-user-stats/markfaulk350?format=string&weeks=52
 
- // JSON Response
+ // JSON Response - For any web client
  https://github-contribution-api.herokuapp.com/github-user-stats/markfaulk350?format=json
 
  ---------- API ENPOINTS ----------
