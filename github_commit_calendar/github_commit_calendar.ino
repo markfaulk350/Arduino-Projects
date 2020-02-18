@@ -41,27 +41,30 @@
  */
 
 #include <SPI.h>
-#include <WiFiNINA.h>
+#include <WiFiNINA.h> // Needed for wifi functionality on Arduino Uno WiFi Rev2 Board
+#include <Adafruit_NeoPixel.h>
 
-#include "secrets.h"
+#include "secrets.h" // Contains wifi network name and password
+
+#define DATA_PIN 7
+#define NUM_LEDS 21
 
 char ssid[] = SECRET_SSID; // Wifi Network
 char pass[] = SECRET_PASS; // Wifi Password
 
 String responseString; // Where the raw http response is written to
+bool hasStartedReading = false; // Used to tell if we have started reading the HTTP response from the API
 
-bool hasStartedReading = false;
 int status = WL_IDLE_STATUS;
 
-// Initialize the Wifi client library
-WiFiClient client;
+WiFiClient client; // Initialize the Wifi client library
 
-char server[] = "github-contribution-api.herokuapp.com";
-//IPAddress server(64,131,82,241);
+char server[] = "github-contribution-api.herokuapp.com"; // or IPAddress server(64,131,82,241);
 
 unsigned long lastConnectionTime = 0;              // last time you connected to the server, in milliseconds
 const unsigned long postingInterval = 20L * 1000L; // delay between updates, in milliseconds
-// const unsigned long postingInterval = 10L * 1000L; // delay between updates, in milliseconds
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup()
 {
@@ -103,44 +106,30 @@ void setup()
   // you're connected now, so print out the status:
   printWifiStatus();
 
+  strip.begin();
+
   Serial.print("-/ setup ------------------------------\n\n");
 }
 
 void loop()
 {
-
-  // THE IDEA IS TO MAKE AN API CALL FOR NEW GITHUB DATA EVERY 5 MIN.
-  // THE API CALL WILL TRIGGER A NODE.JS WEBSCRAPER THAT WILL GO THROUGH GITHUB AND GRAB COMMIT HISTORY
-  // THE API CAN EITHER RETURN JSON OR A STRING DEPENDING UPON QUERY PARAM "format" = json or string
-  // WE CAN SELECT THE NUMER OF WEEKS OF DATA WE WANT USING THE QUERY PARAM "weeks" = 52
-  // WE WANT TO GET THE STRING FROM THE API PARSE IT AND SAVE THE DATA TO A LIST
-  // WE THEN WANT TO ITERATE THROUGH THE LIST AND LIGHT UP LEDS
-  // COLORS WILL VARY DEPENDING UPON THE NUMBER OF GIT COMMITS PER DAY
-
-  // if there's incoming data from the net connection.
-  // send it out the serial port.  This is for debugging
-  // purposes only:
-
   while (client.available())
   {
     char c = client.read();
-    responseString.concat(c);
-    // Serial.write(c);
-    // Serial.print(responseString.length());
-
+    responseString.concat(c); // Concatenates each response character to the raw responseString
     hasStartedReading = true;
   }
 
-  // Request has finished and we now have response in responseString
+  // Request has finished and we now have raw response in responseString
   while (!client.available() && hasStartedReading == true)
   {
     // Serial.print(responseString);
 
     int responseLength = responseString.length();
     int start = responseString.indexOf('|start|');
-    String responseBody = responseString.substring(start + 7, responseLength);
+    String responseBody = responseString.substring(start + 7, responseLength); // Seperate response body from response headers
 
-    // NEED TO COUNT NUMBER OF COMMAS IN STRING TO KNOW HOW MANY WE CAN PRINT / LEDS TO LIGHT
+    // NEED TO COUNT NUMBER OF COMMAS IN STRING TO KNOW HOW MANY DAYS WORTH OF DATA THE API SENT
     int commaCount = 0; // The amount of data will be (commaCount + 1) !!!!
 
     for (int i = 0; i < responseBody.length(); i++)
@@ -148,22 +137,19 @@ void loop()
       if (responseBody.charAt(i) == ',')
       {
         commaCount = commaCount + 1;
-        // Serial.println("Comma has been found!");
       }
     }
 
-    // Serial.println('commaCount:');
-    // Serial.println(commaCount);
+    int numOfDaysRecieved = commaCount + 1;
 
-    // Serial.print(responseBody);
 
-    // We need to know how many slots we need for the data
-    // We can calculate this by counting the number of commas in the response body + 1 because the last number does not have a comma
-
+    // Make a copy of the response body string and make it an array of charecters.
+    // Then use strtok to split the days up using the "," delimeter ex) from ["0", ",", "1", "2", ",", "5"] to [0, 12, 5]
+    // Then we can easily loop through the array and light up leds
     char copy[responseBody.length() + 1];
     responseBody.toCharArray(copy, responseBody.length() + 1);
 
-    char *strings[responseBody.length() + 1];
+    char *strings[responseBody.length() + 1]; // Will hold the array of days when split
     int i = 0;
     char *ptr = NULL;
 
@@ -176,29 +162,32 @@ void loop()
       ptr = strtok(NULL, ",");
     }
 
-    // strings[i] = strtok(copy, ",");
+    strip.clear();
 
-    // while (strings[i] != NULL)
-    // {
-    //   strings[i++] = strtok(NULL, ",");
-    // }
-
-    for (i = 0; i < commaCount + 1; i++)
+    for (i = 0; i < NUM_LEDS; i++)
     {
-      Serial.println(strings[i]);
-    }
+      // strip.setPixelColor(i, strip.Color(0, 200, 0));
+      // strip.show();
 
-    // Serial.print(copy);
+      if(atoi(strings[i]) == 0) {
+        strip.setPixelColor(i, strip.Color(0, 0, 0));
+        strip.show();
+      } else if (atoi(strings[i]) > 0){
+        strip.setPixelColor(i, strip.Color(0, 200, 0));
+        strip.show();
+      }
+      // Serial.println(strings[i]);
+    }
 
     // We now need to extract the response body so that we can populate an array with values
     // We know the length of the entire response, we know that the response starts and ends with \n
 
+    // Reset variables for next loop
     hasStartedReading = false;
     responseString = "";
   }
 
-  // if ten seconds have passed since your last connection,
-  // then connect again and send data:
+  // if 20 seconds have passed since your last connection, connect again.
   if (millis() - lastConnectionTime > postingInterval)
   {
     Serial.write("\n\n\n");
@@ -218,7 +207,7 @@ void httpRequest()
     Serial.println("connecting...");
     // client.println("GET / HTTP/1.1");
     // client.println("Host: example.org");
-    client.println("GET /github-user-stats/fabpot?format=string&weeks=2 HTTP/1.1");
+    client.println("GET /github-user-stats/markfaulk350?format=string&weeks=3 HTTP/1.1");
     client.println("Host: github-contribution-api.herokuapp.com");
     client.println("User-Agent: ArduinoWiFi/1.1");
     client.println("Connection: close");
