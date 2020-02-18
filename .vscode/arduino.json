@@ -2,5 +2,5 @@
     "board": "arduino:megaavr:uno2018",
     "configuration": "mode=on",
     "port": "/dev/cu.usbmodem14202",
-    "sketch": "wifi_web_client_repeating/wifi_web_client_repeating.ino"
+    "sketch": "controll_neopixel/controll_neopixel.ino"
 }
